@@ -5,12 +5,11 @@ const sendMessage = (msg) => {
 }
 
 const selectMessages = () => {
-cy.get('.t-chat-content').should('be.visible');
-sendMessage('Hello');
-sendMessage('It is me');
-cy.get('.t-message-dropdown').click({ multiple: true, force: true });
-cy.get('.t-dropdown').should('be.visible');
-cy.get('.t-select-message').click({ multiple: true, force: true });
+    sendMessage('Hello');
+    sendMessage('It is me');
+    cy.get('.t-message-dropdown').click({ multiple: true, force: true });
+    cy.get('.t-dropdown').should('be.visible');
+    cy.get('.t-select-message').click({ multiple: true, force: true });
 }
 
 describe('chats', () => { 
@@ -51,6 +50,27 @@ describe('chats', () => {
         cy.get('.t-message-dropdown').click();
         cy.get('.t-delete-message').click();
         cy.get('.t-delete-message-btn').click();
+        cy.get('.t-chat-mine-message').should('not.be.visible');
+    })
+
+    it('Select messages in My private notes', () => {
+        selectMessages();
+        cy.get('.t-delete-chat-msg-btn').should('be.visible');
+        cy.get('.t-download-chat-msg-btn').should('be.visible');
+        cy.get('.selectCheckbox').should('be.checked');
+        cy.get('.t-chat-mine-message').click({ multiple: true, force: true });
+        cy.get('.t-chat-input').should('be.visible');
+    })
+
+    it('Delete selected messages in My private notes', () => {
+        selectMessages();
+        cy.get('.t-delete-chat-msg-btn').click();
+        cy.get('.t-modal').should('be.visible');
+        cy.get('.t-cancel-delete-msg-popup-btn').click();
+        cy.get('.t-modal').should('not.be.visible');  
+        cy.get('.t-delete-chat-msg-btn').click();
+        cy.get('.t-modal').should('be.visible');
+        cy.get('.t-delete-message-popup-btn').click();
         cy.get('.t-chat-mine-message').should('not.be.visible');
     })
 });

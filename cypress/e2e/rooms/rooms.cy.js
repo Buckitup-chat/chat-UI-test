@@ -1,3 +1,17 @@
+const sendMessage = (msg) => {
+        cy.get('.t-room-input').click().type(msg);
+        cy.get('.t-room-send-message-btn').click();
+        cy.get('.t-room-mine-message').contains(msg);
+}
+
+const selectMessages = () => {
+    cy.get('.t-chat-content').should('be.visible');
+    sendMessage('Hello');
+    sendMessage('It is me');
+    cy.get('.t-message-dropdown').click({ multiple: true, force: true });
+    cy.get('.t-dropdown').should('be.visible');
+    cy.get('.t-select-message').click({ multiple: true, force: true });
+}
 describe('rooms', () => { 
     before(()=> {
         const userName = 'Cypres test user';
@@ -57,9 +71,7 @@ describe('rooms', () => {
 
     it('Send messages to the rooms', () => {
         cy.get('.t-chat-content').should('be.visible');
-        cy.get('.t-room-input').click().type('Hello');
-        cy.get('.t-room-send-message-btn').click();
-        cy.get('.t-room-mine-message').contains('Hello');
+        sendMessage('Hello')
     })
 
     it('Edit messages to the rooms', () => {
@@ -87,6 +99,27 @@ describe('rooms', () => {
         cy.get('.t-message-dropdown').click();
         cy.get('.t-delete-message').click();
         cy.get('.t-delete-message-btn').click();
+        cy.get('.t-room-mine-message').should('not.be.visible');
+    })
+
+    it('Select masseges to the Rooms', () => {
+        selectMessages();
+        cy.get('.t-delete-room-msg-btn').should('be.visible');
+        cy.get('.t-download-room-msg-btn').should('be.visible');
+        cy.get('.selectCheckbox').should('be.checked');
+        cy.get('.t-room-mine-message').click({ multiple: true, force: true });
+        cy.get('.t-room-input').should('be.visible');
+    })
+
+    it('Delete selected to the Rooms', () => {
+        selectMessages();
+        cy.get('.t-delete-room-msg-btn').click();
+        cy.get('.t-modal').should('be.visible');
+        cy.get('.t-cancel-delete-msg-popup-btn').click();
+        cy.get('.t-modal').should('not.be.visible');  
+        cy.get('.t-delete-room-msg-btn').click();
+        cy.get('.t-modal').should('be.visible');
+        cy.get('.t-delete-message-popup-btn').click();
         cy.get('.t-room-mine-message').should('not.be.visible');
     })
   })
