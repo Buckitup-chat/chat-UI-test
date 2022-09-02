@@ -8,4 +8,3 @@ module.exports = defineConfig({
     "pageLoadTimeout": 5000
   },
 });
-// Cypress.config("pageLoadTimeout", 5000);
