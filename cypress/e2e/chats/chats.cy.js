@@ -1,3 +1,5 @@
+import {loginUser} from "../../helpers/helpers";
+
 const sendMessage = (msg) => {
     cy.get('.t-chat-input').click().type(msg);
     cy.get('.t-chat-send-message-btn').click();
@@ -14,11 +16,8 @@ const selectMessages = () => {
 
 describe('chats', () => { 
     before(()=> {
-        const userName = 'Cypres test user';
-        cy.visit(Cypress.env('url'));
-        cy.get('.t-login-form')
-        .find('[type="text"]').type(userName,{force:true});
-        cy.get('.t-login-form').submit();
+        const userName = 'Test User'
+      loginUser(userName)
         cy.get('.t-my-notes').click();
         cy.get('.t-chat-header').find('.t-peer-name').should('have.text', userName);
     })
