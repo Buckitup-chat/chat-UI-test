@@ -16,7 +16,7 @@ import {
     openRoomTab,
     sendInvitation,
     selectMessages,
-    sendMessage
+    sendMessage, cancelDeletion
 } from "../../helpers/helpers";
 
 describe('rooms', () => { 
@@ -101,9 +101,7 @@ describe('rooms', () => {
     it('Delete selected to the Rooms', () => {
         selectMessages();
         clickDeleteSelectedMessagesButton();
-        //cancel deletion
-        cy.get('.t-cancel-delete-msg-popup-btn').click();
-        cy.get('.t-modal').should('not.be.visible');  
+        cancelDeletion()
         clickDeleteSelectedMessagesButton();
         //deletes selected messages
         cy.get('.t-delete-message-popup-btn').click();
