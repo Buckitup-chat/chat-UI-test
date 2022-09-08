@@ -5,6 +5,6 @@ module.exports = defineConfig({
     "env": {
       "url": "http://localhost:4000"
     },
-    "pageLoadTimeout": 5000
+    "pageLoadTimeout": 10000
   },
 });

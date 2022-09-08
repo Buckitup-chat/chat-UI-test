@@ -1,125 +1,111 @@
-const sendMessage = (msg) => {
-        cy.get('.t-room-input').click().type(msg);
-        cy.get('.t-room-send-message-btn').click();
-        cy.get('.t-room-mine-message').contains(msg);
-}
+import {
+    checkIfChatOpen,
+    checkIfRightUser,
+    checkIfSelected,
+    checkInvitationSent,
+    clickDeleteButton,
+    clickDeleteSelectedMessagesButton,
+    closePopups,
+    createOpenRoom,
+    createPrivateRoom,
+    createSecretRoom,
+    editMessage,
+    loginUser,
+    openInviteWindow,
+    openMessageContextMenu,
+    openRoomTab,
+    sendInvitation,
+    selectMessages,
+    sendMessage, cancelDeletion
+} from "../../helpers/helpers";
 
-const selectMessages = () => {
-    cy.get('.t-chat-content').should('be.visible');
-    sendMessage('Hello');
-    sendMessage('It is me');
-    cy.get('.t-message-dropdown').click({ multiple: true, force: true });
-    cy.get('.t-dropdown').should('be.visible');
-    cy.get('.t-select-message').click({ multiple: true, force: true });
-}
 describe('rooms', () => { 
     before(()=> {
-        const userName = 'Cypres test user';
-        cy.visit(Cypress.env('url'));
-        cy.get('.t-login-form')
-        .find('[type="text"]').type(userName,{force:true});
-        cy.get('.t-login-form').submit();
-        cy.get('.t-my-notes').click();
-        cy.get('.t-chat-header').find('.t-peer-name').should('have.text', userName);
-        cy.get('.t-rooms').click();
-        cy.get('.t-create-room').should('be.enabled');
-        cy.get('.t-sidebar-create-room').should('be.enabled');
-        cy.get('.t-confirmed-rooms > ul > .text-base').should('be.visible');
-        cy.get('.t-unconfirmed-rooms').should('be.visible');
-    })
-    it('1st visit Rooms tab', () => {
-        cy.get('.t-confirmed-rooms > ul > .text-base').contains('You have no rooms');
+        const userName = 'Ruslan'
+       loginUser(userName);
+       checkIfRightUser(userName);
+       openRoomTab();
     })
   
     it('Create Open Room', () => {
-        cy.get('.t-create-room').click();
-        cy.get('.t-open-room').click();
-        cy.get('.t-submit-create').click();
+      createOpenRoom();
     })
 
     it('Invite to the Open Room', () => {
-        cy.get('.t-invite-btn').click();
-        cy.get('.t-invite-header').should('be.visible');
-        cy.get('.t-invite').eq(0).find('a').click();
-        cy.get('.t-inv-sent').should('be.visible');
-        cy.get('.t-close-flash-notification').click();
-        cy.get('.t-close-popup').click({multiple:true, force:true});
+        openInviteWindow();
+        sendInvitation();
+        checkInvitationSent();
+        closePopups();
     })
 
     it('Invite to the Private Room', () => {
-        cy.get('.t-sidebar-create-room').click();
-        cy.get('.t-private-room').click();
-        cy.get('.t-submit-create').click();
-        cy.get('.t-invite-btn').click({force:true});
-        cy.get('.t-invite').eq(0).find('a').click();
-        cy.get('.t-inv-sent').should('be.visible');
-        cy.get('.t-close-flash-notification').click();
-        cy.get('.t-close-popup').click({multiple:true, force:true});
-    })  
-    
+        createPrivateRoom();
+        openInviteWindow();
+        sendInvitation();
+        checkInvitationSent();
+        closePopups();
+    })
     
     it('Invite to the Secret Room', () => {
-        cy.get('.t-sidebar-create-room').click();
-        cy.get('.t-secret-room').click();
-        cy.get('.t-submit-create').click();
-        cy.get('.t-invite-btn').click({force:true});
-        cy.get('.t-invite').eq(0).find('a').click();
-        cy.get('.t-inv-sent').should('be.visible');
-        cy.get('.t-close-flash-notification').click();
-        cy.get('.t-close-popup').click({multiple:true, force:true});
-    })  
-
+        createSecretRoom();
+        openInviteWindow();
+        sendInvitation();
+        checkInvitationSent();
+        closePopups();
+    }) 
+    
     it('Send messages to the rooms', () => {
-        cy.get('.t-chat-content').should('be.visible');
-        sendMessage('Hello')
-    })
+        checkIfChatOpen();
+        sendMessage('Hello');
+    }) 
 
     it('Edit messages to the rooms', () => {
-        cy.get('.t-chat-content').should('be.visible');
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-edit-message').click();
-        cy.get('.t-edit').should('be.visible');
-        cy.get('.t-room-edit-input').click().type(' how are you?');
+        const message = ' how are you?';
+        checkIfChatOpen();
+        openMessageContextMenu();
+        editMessage(message);
+        //cancel editing
         cy.get('.t-cancel-edit').click();
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-edit-message').click();
-        cy.get('.t-edit').should('be.visible');
-        cy.get('.t-room-edit-input').click().type(' how are you?');
+        openMessageContextMenu();
+        editMessage(message);
+        //sends message
         cy.get('.t-room-edit-send-btn').click({force:true});
+        //check if the right message
         cy.get('.t-room-mine-message').contains('Hello how are you?');
     })
 
     it('Delete messages to the rooms', () => {
-        cy.get('.t-chat-content').should('be.visible');
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-delete-message').click();
-        cy.get('.t-delete-message-popup').should('be.visible');
+        checkIfChatOpen();
+        openMessageContextMenu();
+        clickDeleteButton();
+        //cancel deleting
         cy.get('.t-delete-cancel').click();
         cy.get('.t-delete-message-popup').should('not.be.visible');
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-delete-message').click();
+        openMessageContextMenu();
+        clickDeleteButton();
+        //deletes message
         cy.get('.t-delete-message-btn').click();
+        //check if the message deleted
         cy.get('.t-room-mine-message').should('not.be.visible');
     })
 
-    it('Select masseges to the Rooms', () => {
+    it('Select messages to the Rooms', () => {
         selectMessages();
-        cy.get('.t-delete-room-msg-btn').should('be.visible');
-        cy.get('.t-download-room-msg-btn').should('be.visible');
-        cy.get('.selectCheckbox').should('be.checked');
+        checkIfSelected();
+        //click messages for unselect
         cy.get('.t-room-mine-message').click({ multiple: true, force: true });
+        //check if unselected
         cy.get('.t-room-input').should('be.visible');
     })
 
     it('Delete selected to the Rooms', () => {
         selectMessages();
-        cy.get('.t-delete-room-msg-btn').click();
-        cy.get('.t-modal').should('be.visible');
-        cy.get('.t-cancel-delete-msg-popup-btn').click();
-        cy.get('.t-modal').should('not.be.visible');  
-        cy.get('.t-delete-room-msg-btn').click();
-        cy.get('.t-modal').should('be.visible');
+        clickDeleteSelectedMessagesButton();
+        cancelDeletion()
+        clickDeleteSelectedMessagesButton();
+        //deletes selected messages
         cy.get('.t-delete-message-popup-btn').click();
+        //check if selected messages deleted
         cy.get('.t-room-mine-message').should('not.be.visible');
     })
   })

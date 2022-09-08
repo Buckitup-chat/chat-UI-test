@@ -1,76 +1,69 @@
-const sendMessage = (msg) => {
-    cy.get('.t-chat-input').click().type(msg);
-    cy.get('.t-chat-send-message-btn').click();
-    cy.get('.t-chat-mine-message').contains(msg);
-}
-
-const selectMessages = () => {
-    sendMessage('Hello');
-    sendMessage('It is me');
-    cy.get('.t-message-dropdown').click({ multiple: true, force: true });
-    cy.get('.t-dropdown').should('be.visible');
-    cy.get('.t-select-message').click({ multiple: true, force: true });
-}
+import {
+    cancelDeletion,
+    checkIfRightUser, checkIfSelected, clickDeleteButton, clickDeleteSelectedMessagesButton,
+    editMessage,
+    loginUser,
+    openMessageContextMenu,
+    selectMessages,
+    sendMessage
+} from "../../helpers/helpers";
 
 describe('chats', () => { 
     before(()=> {
-        const userName = 'Cypres test user';
-        cy.visit(Cypress.env('url'));
-        cy.get('.t-login-form')
-        .find('[type="text"]').type(userName,{force:true});
-        cy.get('.t-login-form').submit();
-        cy.get('.t-my-notes').click();
-        cy.get('.t-chat-header').find('.t-peer-name').should('have.text', userName);
+        const userName = 'Test User'
+        loginUser(userName)
+        checkIfRightUser(userName)
     })
 
     it('Send to My private notes', () => {
-        sendMessage('Hi there')
+        sendMessage('Hi there', 'chat')
     })
 
     it('Edit My private notes', () => {
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-edit-message').click();
-        cy.get('.t-edit').should('be.visible');
-        cy.get('.t-chat-edit-input').click().type(' how are you?');
+        const message = ' how are you?'
+        openMessageContextMenu();
+        editMessage(message, 'chat');
+        //cancel editing
         cy.get('.t-cancel-edit').click();
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-edit-message').click();
-        cy.get('.t-edit').should('be.visible');
-        cy.get('.t-chat-edit-input').click().type(' how are you?');
+        openMessageContextMenu();
+        editMessage(message, 'chat');
+        //sends message
         cy.get('.t-chat-edit-send-btn').click({force:true});
+        //check if the right message
         cy.get('.t-chat-mine-message').contains('Hi there how are you?');
     })
 
     it('Delete My private notes', () => {
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-delete-message').click();
-        cy.get('.t-delete-message-popup').should('be.visible');
+       openMessageContextMenu();
+        clickDeleteButton();
+        //cancel deleting
         cy.get('.t-delete-cancel').click();
         cy.get('.t-delete-message-popup').should('not.be.visible');
-        cy.get('.t-message-dropdown').click();
-        cy.get('.t-delete-message').click();
+        openMessageContextMenu();
+        clickDeleteButton();
+        //deletes message
         cy.get('.t-delete-message-btn').click();
+        //check if the message deleted
         cy.get('.t-chat-mine-message').should('not.be.visible');
     })
 
     it('Select messages in My private notes', () => {
-        selectMessages();
-        cy.get('.t-delete-chat-msg-btn').should('be.visible');
-        cy.get('.t-download-chat-msg-btn').should('be.visible');
-        cy.get('.selectCheckbox').should('be.checked');
+        selectMessages('chat');
+        checkIfSelected('chat');
+        //click messages for unselect
         cy.get('.t-chat-mine-message').click({ multiple: true, force: true });
+        //check if unselected
         cy.get('.t-chat-input').should('be.visible');
     })
 
     it('Delete selected messages in My private notes', () => {
-        selectMessages();
-        cy.get('.t-delete-chat-msg-btn').click();
-        cy.get('.t-modal').should('be.visible');
-        cy.get('.t-cancel-delete-msg-popup-btn').click();
-        cy.get('.t-modal').should('not.be.visible');  
-        cy.get('.t-delete-chat-msg-btn').click();
-        cy.get('.t-modal').should('be.visible');
+        selectMessages('chat');
+        clickDeleteSelectedMessagesButton('chat')
+        cancelDeletion();
+        clickDeleteSelectedMessagesButton('chat');
+        //deletes selected messages
         cy.get('.t-delete-message-popup-btn').click();
+        //check if selected messages deleted
         cy.get('.t-chat-mine-message').should('not.be.visible');
     })
 });
