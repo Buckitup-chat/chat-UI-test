@@ -3,7 +3,7 @@ import {
     checkIfRightUser, checkIfSelected, clickDeleteButton, clickDeleteSelectedMessagesButton,
     editMessage,
     loginUser,
-    openMessageContextMenu,
+    openMessageContextMenu, openMyNotes, openRoomTab,
     selectMessages,
     sendMessage
 } from "../../helpers/helpers";
@@ -66,4 +66,45 @@ describe('chats', () => {
         //check if selected messages deleted
         cy.get('.t-chat-mine-message').should('not.be.visible');
     })
+
+    it('Check if proper message rendering', () => {
+        const messagesPerPage = 15;
+        for(let i = 1; i < 21; i++) {
+            sendMessage(`${i}`, 'chat')
+        }
+        openRoomTab();
+        openMyNotes();
+
+        //Count elements
+         cy.window().then((win) => {
+           let children = win.eval('let messages = document.getElementById(\'chat-messages\');' +
+                'children = messages.children');
+             cy.get(children).should("have.length", messagesPerPage)
+        });
+        //deletes message
+        cy.get('.t-message-dropdown').eq(3).click();
+        cy.get('.t-delete-message').eq(3).click();
+        cy.get('.t-delete-message-btn').click({force: true});
+
+        //deletes message
+        cy.get('.t-message-dropdown').eq(7).click();
+        cy.get('.t-delete-message').eq(7).click({force: true});
+        cy.get('.t-delete-message-btn').click();
+
+        //scroll up
+        cy.get('.t-chat-content').scrollTo('top', {duration: 2000});
+        //scroll down
+        cy.get('.t-chat-content').scrollTo('center', {duration: 2000} );
+        //scroll up
+        cy.get('.t-chat-content').scrollTo('top', {duration: 2000});
+        //check amount of elements after deleting
+        cy.window().then((win) => {
+            let children = win.eval('let messages = document.getElementById(\'chat-messages\');' +
+                'children = messages.children');
+            console.log(children)
+            //filter visible elements
+            let visibleElements = Array.from(children).filter(el => !el.className.includes('hidden'))
+            cy.get(visibleElements).should('have.length.lessThan',messagesPerPage)
+        });
+     })
 });

@@ -125,3 +125,11 @@ export const cancelDeletion = () => {
     cy.get('.t-cancel-delete-msg-popup-btn').click();
     cy.get('.t-modal').should('not.be.visible');
 }
+
+export const openMyNotes = () => {
+    cy.get('.t-chats').click();
+    for (let i = 0; i < 2; i++) {
+        cy.get('.t-my-notes').click();
+    }
+
+}
