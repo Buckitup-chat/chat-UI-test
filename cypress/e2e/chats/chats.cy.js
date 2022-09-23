@@ -101,7 +101,6 @@ describe('chats', () => {
         cy.window().then((win) => {
             let children = win.eval('let messages = document.getElementById(\'chat-messages\');' +
                 'children = messages.children');
-            console.log(children)
             //filter visible elements
             let visibleElements = Array.from(children).filter(el => !el.className.includes('hidden'))
             cy.get(visibleElements).should('have.length.lessThan',messagesPerPage)
