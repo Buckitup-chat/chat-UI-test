@@ -69,6 +69,7 @@ describe('chats', () => {
 
     it('Check if proper message rendering', () => {
         const messagesPerPage = 15;
+        const sentMessagesAmount = 20;
         for(let i = 1; i < 21; i++) {
             sendMessage(`${i}`, 'chat')
         }
@@ -103,7 +104,7 @@ describe('chats', () => {
                 'children = messages.children');
             //filter visible elements
             let visibleElements = Array.from(children).filter(el => !el.className.includes('hidden'))
-            cy.get(visibleElements).should('have.length.lessThan',messagesPerPage)
+            cy.get(visibleElements).should('have.length.lessThan',sentMessagesAmount)
         });
      })
 });
