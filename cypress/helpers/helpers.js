@@ -35,13 +35,13 @@ export const openRoomTab = () => {
     cy.get('.t-rooms').click();
     cy.get('.t-create-room').should('be.enabled');
     cy.get('.t-sidebar-create-room').should('be.enabled');
-    cy.get('.t-confirmed-rooms > ul > .text-base').should('be.visible');
+    // cy.get('.t-confirmed-rooms > ul > .text-base').should('be.visible');
     cy.get('.t-unconfirmed-rooms').should('be.visible');
-    cy.get('.t-confirmed-rooms > ul > .text-base').contains('You have no rooms');
+    // cy.get('.t-confirmed-rooms > ul > .text-base').contains('You have no rooms');
 }
 
 export const createOpenRoom = () => {
-    cy.get('.t-create-room').click();
+    cy.get('.t-sidebar-create-room').click();
     cy.get('.t-open-room').click();
     cy.get('.t-submit-create').click();
 }
@@ -131,5 +131,13 @@ export const openMyNotes = () => {
     for (let i = 0; i < 2; i++) {
         cy.get('.t-my-notes').click();
     }
+}
 
+export const openFeeds = () => {
+    cy.get('.t-feeds').click({force: true});
+}
+
+export const clearDb = () => {
+    cy.visit('http://localhost:4000/reset');
+    cy.get('body').should("contain", "clear")
 }
