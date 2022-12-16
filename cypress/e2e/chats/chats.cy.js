@@ -58,7 +58,7 @@ describe('chats', () => {
 
     it('Delete selected messages in My private notes', () => {
         selectMessages('chat');
-        clickDeleteSelectedMessagesButton('chat')
+        clickDeleteSelectedMessagesButton('chat');
         cancelDeletion();
         clickDeleteSelectedMessagesButton('chat');
         //deletes selected messages
