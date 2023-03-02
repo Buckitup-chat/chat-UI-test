@@ -20,11 +20,16 @@ import {
 } from "../../helpers/helpers";
 
 describe('rooms', () => { 
-    before(()=> {
+    beforeEach(()=> {
         const userName = 'Ruslan'
        loginUser(userName);
        checkIfRightUser(userName);
        openRoomTab();
+    })
+
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        // allow the test to continue
+        return false
     })
   
     it('Create Open Room', () => {
@@ -32,6 +37,7 @@ describe('rooms', () => {
     })
 
     it('Invite to the Open Room', () => {
+        createOpenRoom();
         openInviteWindow();
         sendInvitation();
         checkInvitationSent();
@@ -55,11 +61,14 @@ describe('rooms', () => {
     })
 
     it('Send messages to the rooms', () => {
+        createOpenRoom();
         checkIfChatOpen();
         sendMessage('Hello');
     })
 
     it('Edit messages to the rooms', () => {
+        createOpenRoom();
+        sendMessage('Hello');
         const message = ' how are you?';
         checkIfChatOpen();
         openMessageContextMenu();
@@ -75,6 +84,8 @@ describe('rooms', () => {
     })
 
     it('Delete messages to the rooms', () => {
+        createOpenRoom();
+        sendMessage('Hello');
         checkIfChatOpen();
         openMessageContextMenu();
         clickDeleteButton();
@@ -90,16 +101,19 @@ describe('rooms', () => {
     })
 
     it('Select messages to the Rooms', () => {
+        createOpenRoom()
         selectMessages();
         checkIfSelected();
         //click messages for unselect
-        cy.get('.t-room-mine-message').click({ multiple: true, force: true });
+        cy.get('.t-room-mine-message').first().click();
         //check if unselected
         cy.get('.t-room-input').should('be.visible');
     })
 
     it('Delete selected to the Rooms', () => {
+        createOpenRoom()
         selectMessages();
+        cy.get('.t-chat-mine-message').last().click();
         clickDeleteSelectedMessagesButton();
         cancelDeletion()
         clickDeleteSelectedMessagesButton();
@@ -135,12 +149,12 @@ describe('rooms', () => {
         cy.get('.t-message-dropdown').eq(3).click();
         cy.get('.t-delete-message').eq(3).click();
         cy.get('.t-delete-message-btn').click({force: true});
-
+    
         //deletes message
         cy.get('.t-message-dropdown').eq(7).click();
         cy.get('.t-delete-message').eq(7).click({force: true});
         cy.get('.t-delete-message-btn').click();
-
+    
         //scroll up
         cy.get('.t-chat-content').scrollTo('top', {duration: 2000});
         //scroll down

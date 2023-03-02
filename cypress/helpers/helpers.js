@@ -14,9 +14,9 @@ export const selectMessages = (type) => {
     cy.get('.t-chat-content').should('be.visible');
     sendMessage('Hello', type);
     sendMessage('It is me', type);
-    cy.get('.t-message-dropdown').click({ multiple: true, force: true });
+    cy.get('.t-message-dropdown').first().click();
     cy.get('.t-dropdown').should('be.visible');
-    cy.get('.t-select-message').click({ multiple: true, force: true });
+    cy.get('.t-select-message').first().click();
 }
 
 export const loginUser = (userName) => {
@@ -27,7 +27,7 @@ export const loginUser = (userName) => {
 }
 
 export const checkIfRightUser = (userName) => {
-    cy.get('.t-my-notes').click();
+    cy.get('.t-my-notes').eq(0).click({force: true})
     cy.get('.t-chat-header').find('.t-peer-name').should('have.text', userName);
 }
 

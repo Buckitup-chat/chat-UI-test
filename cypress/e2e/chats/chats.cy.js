@@ -9,7 +9,7 @@ import {
 } from "../../helpers/helpers";
 
 describe('chats', () => { 
-    before(()=> {
+    beforeEach(()=> {
         const userName = 'Test User'
         loginUser(userName)
         checkIfRightUser(userName)
@@ -20,6 +20,7 @@ describe('chats', () => {
     })
 
     it('Edit My private notes', () => {
+        sendMessage('Hi there', 'chat')
         const message = ' how are you?'
         openMessageContextMenu();
         editMessage(message, 'chat');
@@ -34,6 +35,7 @@ describe('chats', () => {
     })
 
     it('Delete My private notes', () => {
+        sendMessage('Hi there', 'chat')
        openMessageContextMenu();
         clickDeleteButton();
         //cancel deleting
@@ -51,13 +53,14 @@ describe('chats', () => {
         selectMessages('chat');
         checkIfSelected('chat');
         //click messages for unselect
-        cy.get('.t-chat-mine-message').click({ multiple: true, force: true });
+        cy.get('.t-chat-mine-message').first().click();
         //check if unselected
         cy.get('.t-chat-input').should('be.visible');
     })
 
     it('Delete selected messages in My private notes', () => {
         selectMessages('chat');
+        cy.get('.t-chat-mine-message').last().click();
         clickDeleteSelectedMessagesButton('chat');
         cancelDeletion();
         clickDeleteSelectedMessagesButton('chat');
@@ -66,7 +69,7 @@ describe('chats', () => {
         //check if selected messages deleted
         cy.get('.t-chat-mine-message').should('not.be.visible');
     })
-
+    //
     it('Check if proper message rendering', () => {
         const messagesPerPage = 15;
         for(let i = 1; i < 21; i++) {

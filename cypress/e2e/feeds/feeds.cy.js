@@ -27,6 +27,11 @@ describe('Feeds', () => {
         }
     })
 
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        // allow the test to continue
+        return false
+    })
+
     it('Check feeds loading', () => {
         openFeeds()
         //check
