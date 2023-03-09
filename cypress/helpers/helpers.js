@@ -128,9 +128,8 @@ export const cancelDeletion = () => {
 
 export const openMyNotes = () => {
     cy.get('.t-chats').click();
-    for (let i = 0; i < 2; i++) {
-        cy.get('.t-my-notes').click();
-    }
+    cy.get('.t-my-notes').click();
+
 }
 
 export const openFeeds = () => {

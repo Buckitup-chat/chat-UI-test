@@ -16,7 +16,7 @@ import {
     openRoomTab,
     sendInvitation,
     selectMessages,
-    sendMessage, cancelDeletion, openMyNotes
+    sendMessage, cancelDeletion, openMyNotes, clearDb
 } from "../../helpers/helpers";
 
 describe('rooms', () => { 
@@ -124,14 +124,21 @@ describe('rooms', () => {
     })
 
     it('Check if proper message rendering', () => {
+        clearDb()
+        cy.visit(Cypress.env('url'));
+        openRoomTab();
+        createOpenRoom()
         //go to the room
         cy.get('.t-confirmed-rooms-list').eq(0).click();
-        const messagesPerPage = 15;
+        const messagesCount = 20;
         let children;
         for(let i = 1; i < 21; i++) {
             sendMessage(`${i}`, )
         }
-        openMyNotes();
+        cy.get('.t-chats').click();
+        for (let i = 0; i < 2; i++) {
+            cy.get('.t-my-notes').first().click();
+        }
         //open roomTab
         cy.get('.t-rooms').click();
         cy.get('.t-create-room').should('be.enabled');
@@ -143,7 +150,7 @@ describe('rooms', () => {
         cy.window().then((win) => {
             let children = win.eval('let messages = document.getElementById(\'chat-messages\');' +
                 'el = messages.children');
-            cy.get(children).should("have.length", messagesPerPage)
+            cy.get(children).should("have.length", messagesCount)
         });
         //deletes message
         cy.get('.t-message-dropdown').eq(3).click();
@@ -167,7 +174,7 @@ describe('rooms', () => {
                 'children = messages.children');
             //filter visible elements
             let childrenAfterDeleting = Array.from(children).filter(el => !el.className.includes('hidden'))
-            cy.get(childrenAfterDeleting).should('have.length.lessThan',messagesPerPage)
+            cy.get(childrenAfterDeleting).should('have.length',messagesCount - 2)
         });
     })
   })
