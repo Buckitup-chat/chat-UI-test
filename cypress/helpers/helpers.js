@@ -129,7 +129,6 @@ export const cancelDeletion = () => {
 export const openMyNotes = () => {
     cy.get('.t-chats').click();
     cy.get('.t-my-notes').click();
-
 }
 
 export const openFeeds = () => {

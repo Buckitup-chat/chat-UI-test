@@ -179,18 +179,11 @@ describe('rooms', () => {
     })
 
     it('message received', () => {
+        openRoomTab();
+        createOpenRoom();
         const message = 'Hello'
         sendMessage(message);
         //Check if User see sent message
         cy.get('#chat-messages').children().last().contains(message)
     })
-
-    // it('Confirm Invite to the Open Room', () => {
-    //     const userName = 'Ruslan'
-    //     loginUser(userName);
-    //     cy.window().then((win) => {
-    //         let key = win.eval('localStorage.getItem(\'buckitUp-chat-auth\');')
-    //         console.log(key)
-    //     });
-    // })
   })
