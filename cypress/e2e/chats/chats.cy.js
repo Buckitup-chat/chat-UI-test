@@ -1,6 +1,6 @@
 import {
     cancelDeletion,
-    checkIfRightUser, checkIfSelected, clickDeleteButton, clickDeleteSelectedMessagesButton,
+    checkIfRightUser, checkIfSelected, clearDb, clickDeleteButton, clickDeleteSelectedMessagesButton,
     editMessage,
     loginUser,
     openMessageContextMenu, openMyNotes, openRoomTab,
@@ -10,6 +10,7 @@ import {
 
 describe('chats', () => { 
     beforeEach(()=> {
+        clearDb()
         const userName = 'Test User'
         loginUser(userName)
         checkIfRightUser(userName)
@@ -69,21 +70,22 @@ describe('chats', () => {
         //check if selected messages deleted
         cy.get('.t-chat-mine-message').should('not.be.visible');
     })
-    //
+
     it('Check if proper message rendering', () => {
-        const messagesPerPage = 15;
-        const sentMessagesAmount = 20;
+        const messagesCount = 20;
         for(let i = 1; i < 21; i++) {
             sendMessage(`${i}`, 'chat')
         }
-        openRoomTab();
-        openMyNotes();
-
+        openRoomTab()
+        cy.get('.t-chats').click();
+        for (let i = 0; i < 2; i++) {
+            cy.get('.t-my-notes').first().click();
+        }
         //Count elements
          cy.window().then((win) => {
            let children = win.eval('let messages = document.getElementById(\'chat-messages\');' +
                 'children = messages.children');
-             cy.get(children).should("have.length", messagesPerPage)
+             cy.get(children).should("have.length", messagesCount)
         });
         //deletes message
         cy.get('.t-message-dropdown').eq(3).click();
@@ -107,7 +109,7 @@ describe('chats', () => {
                 'children = messages.children');
             //filter visible elements
             let visibleElements = Array.from(children).filter(el => !el.className.includes('hidden'))
-            cy.get(visibleElements).should('have.length.lessThan',sentMessagesAmount)
+            cy.get(visibleElements).should('have.length',messagesCount - 2)
         });
      })
 });
